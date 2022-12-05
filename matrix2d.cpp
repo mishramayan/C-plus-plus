@@ -30,8 +30,8 @@ void matrix2d::init(const char* s)
     int n = 0;
     int i = 0;
     int j = 0;
-    int numcol_ol = 0;
-    int numrow_ow = 0;
+    int numcol = 0;
+    int numrow = 0;
     int idx = 0;
     bool failed = false;
     int temp[1024];
@@ -49,15 +49,15 @@ void matrix2d::init(const char* s)
             }
             n = 0;
             if (ch == '\0' || ch == '|') {
-                ++numrow_ow;
-                if (numcol_ol) {
-                    if (numcol_ol != k) {
+                ++numrow;
+                if (numcol) {
+                    if (numcol != k) {
                         failed = true;
                         break;
                     }
                 }
                 else {
-                    numcol_ol = k;
+                    numcol = k;
                 }
                 k = 0;
             }
@@ -72,10 +72,10 @@ void matrix2d::init(const char* s)
         }
     } while (ch != '\0');
 
-    if (!failed && numrow_ow && numcol_ol) {
-        assert(idx == numrow_ow * numcol_ol);
-        row_ = numrow_ow;
-        col_ = numcol_ol;
+    if (!failed && numrow && numcol) {
+        assert(idx == numrow * numcol);
+        row_ = numrow;
+        col_ = numcol;
         m_ = new int* [row_];
         for (int k = 0; k < row_; ++k) {
             m_[k] = new int[col_];
@@ -90,7 +90,7 @@ void matrix2d::init(const char* s)
     }
 }
 
-void matrix2d::print(const char* t)
+void matrix2d::print(const char* t) const
 {
 	cout << t << endl;
 	if (isEmpty()) {
@@ -124,13 +124,13 @@ void matrix2d::fini()
 matrix2d matrix2d::add(matrix2d a)
 {
     matrix2d s;
-
     s.init();
-    if (row_ == a.row_ && col_ == a.col_) {
+    const matrix2d& b = *(this);
+    if (b.row_ == a.row_ && b.col_ == a.col_) {
         s.init(a.row_, a.col_);
         for (int i = 0; i < row_; i++) {
             for (int j = 0; j < col_; j++) {
-                s.m_[i][j] = m_[i][j] +  a.m_[i][j];
+                s.m_[i][j] = b.m_[i][j] +  a.m_[i][j];
             }
         }
     }
@@ -159,7 +159,7 @@ matrix2d matrix2d::mult(matrix2d a)
 	return s;
 }
 
-bool matrix2d::isEqual(matrix2d a)
+bool matrix2d::isEqual(const matrix2d& a) const
 {
     if (row_ == a.row_ && col_ == a.col_) {
         for (int i = 0; i < row_; ++i) {
@@ -174,7 +174,7 @@ bool matrix2d::isEqual(matrix2d a)
 	return false;
 }
 
-bool matrix2d::isEmpty()
+bool matrix2d::isEmpty() const
 {
 	if (row_ == 0 || col_ == 0) {
 		return true;
